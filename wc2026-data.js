@@ -11,9 +11,9 @@
 // ============================================================================
 
 export const CONFIG = {
-  feedUrl: '',          // e.g. 'https://your-app.up.railway.app/api/tournament'
-  pollMs: 60000,        // poll cadence when feedUrl is set
-  favorite: 'ENG',      // highlighted team (3-letter code)
+  feedUrl: '/api/tournament',  // same-origin in the single-service deploy
+  pollMs: 60000,               // poll cadence when feedUrl is set
+  favorite: 'ENG',             // highlighted team (3-letter code)
 };
 
 // ── 48 teams in 12 groups: [code, name, flagcdn-code] ───────────────────────

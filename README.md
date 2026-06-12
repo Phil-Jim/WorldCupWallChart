@@ -4,8 +4,8 @@ One-screen FIFA World Cup 2026 wall chart — group standings, fixtures, and the
 full knockout bracket auto-filling as the tournament progresses.
 
 **Design:** retro El Mundial '70 print (cream/marigold/ink, sunburst header).
-**Stack:** static HTML/React (via the bundled DC runtime) + a tiny Express
-proxy to football-data.org.
+**Stack:** static HTML/React (via the bundled DC runtime) served by the same
+Express service that proxies football-data.org.
 
 ## Layout
 
@@ -14,42 +14,56 @@ proxy to football-data.org.
 ├── index.html          # the wall chart (DC template + inline component)
 ├── support.js          # DC runtime — loads React from CDN and boots the chart
 ├── wc2026-data.js      # seed tournament data + CONFIG (feedUrl, favorite team)
-└── backend/            # Railway proxy for live football-data.org results
+├── server.js           # Express: serves the static front-end + /api/tournament
+├── package.json
+├── .env.example
+└── BACKEND.md          # proxy details + Railway env reference
 ```
+
+The whole thing is one service: front-end and feed share an origin.
 
 ## Run locally
 
 ```bash
-python3 -m http.server 8888
-# open http://localhost:8888/
+npm install
+FOOTBALL_DATA_KEY=your_key npm start
+# open http://localhost:8080/
 ```
 
-The chart works **offline** on its seed data. The header badge shows **SEED**
-until you wire a feed URL.
+`FOOTBALL_DATA_KEY` is optional — without it the chart runs on seed data and
+the header badge stays on **SEED**. Set it and `/api/tournament` returns live
+results; the badge flips to **LIVE**.
 
-## Go live
+## Deploy on Railway
 
-1. Get a free API key from <https://www.football-data.org/>.
-2. Deploy the **backend/** folder to Railway and set `FOOTBALL_DATA_KEY`. See
-   `backend/README.md`.
-3. Paste the Railway URL into `wc2026-data.js`:
-   ```js
-   feedUrl: 'https://your-service.up.railway.app/api/tournament'
-   ```
-4. Reload. Badge flips **SEED → LIVE**; group tables, scores, and the bracket
-   poll every 60s.
+Already deployed at:
+- <https://worldcupwallchart-production.up.railway.app/>
+
+To deploy fresh:
+
+1. New Project → **Deploy from GitHub repo** → pick `Phil-Jim/WorldCupWallChart`.
+2. **Settings → Source → Root Directory:** `.` (the repo root).
+3. **Variables:** `FOOTBALL_DATA_KEY=<your-key>`.
+4. **Settings → Networking → Generate Domain.**
+
+The chart loads at `https://<domain>/`. `/api/tournament` is same-origin —
+no CORS, no extra config in `wc2026-data.js`.
 
 ## Configuration
 
-`wc2026-data.js` — top of file:
+`wc2026-data.js`:
 
 ```js
 export const CONFIG = {
-  feedUrl: '',          // your Railway proxy URL
-  pollMs: 60000,        // poll cadence
-  favorite: 'ENG',      // highlighted team (3-letter code)
+  feedUrl: '/api/tournament',  // same-origin in the single-service deploy
+  pollMs: 60000,
+  favorite: 'ENG',             // highlighted team (3-letter code)
 };
 ```
+
+To follow a different nation, change `favorite` to that team's 3-letter code
+(`BRA`, `ARG`, `FRA`, `GER`, etc.). The chart highlights its group card and
+every bracket node on its path.
 
 ## Features
 
@@ -65,3 +79,6 @@ export const CONFIG = {
 - Next-kickoff countdown
 - UK (BST) ↔ host-city local time toggle
 - Last-updated stamp + SEED → LIVE badge
+
+See **BACKEND.md** for the env knobs (`CACHE_TTL_SECONDS`, `COMPETITION_ID`,
+`ALLOWED_ORIGINS`) and notes on the knockout overlay.

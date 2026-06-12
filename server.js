@@ -1,11 +1,16 @@
-// World Cup 2026 wall chart — football-data.org proxy
-// Returns the normalized "tournament" shape the chart expects:
+// World Cup 2026 wall chart — single-service deploy.
+// Serves the static front-end (index.html + support.js + wc2026-data.js) and
+// proxies live results from football-data.org under /api/tournament.
+// Normalized shape:
 //   { meta:{updated,source}, groups:[{id,teams,matches}], bracket:{r32,r16,qf,sf,third,final} }
-//
-// The chart polls GET /api/tournament every 60s. We cache upstream responses
-// to stay under football-data.org's 10 req/min free-tier limit.
+// The chart polls /api/tournament every 60s; we cache upstream responses to
+// stay under football-data.org's 10 req/min free-tier limit.
 
 import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const PORT = process.env.PORT || 8080;
 const KEY = process.env.FOOTBALL_DATA_KEY;
@@ -19,7 +24,6 @@ app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (ALLOWED.includes('*')) res.setHeader('Access-Control-Allow-Origin', '*');
   else if (origin && ALLOWED.includes(origin)) res.setHeader('Access-Control-Allow-Origin', origin);
-  res.setHeader('Cache-Control', 'public, max-age=30');
   next();
 });
 
@@ -28,6 +32,7 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 let cache = { at: 0, body: null };
 
 app.get('/api/tournament', async (_req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=30');
   if (!KEY) {
     return res.status(503).json({ error: 'FOOTBALL_DATA_KEY not configured' });
   }
@@ -46,7 +51,21 @@ app.get('/api/tournament', async (_req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log('wallchart-feed listening on :' + PORT));
+// Static front-end. Served from the repo root — index.html, support.js,
+// wc2026-data.js, README.md, etc. The dotfile/backend filter keeps secrets
+// out: .env, .git/, node_modules/ are never reached as long as the index
+// is the only entry point.
+app.use(express.static(__dirname, {
+  index: 'index.html',
+  extensions: ['html'],
+  setHeaders(res, p) {
+    if (p.endsWith('.js')) res.setHeader('Content-Type', 'text/javascript; charset=utf-8');
+    // Short cache so a redeploy is visible within a minute.
+    res.setHeader('Cache-Control', 'public, max-age=60');
+  },
+}));
+
+app.listen(PORT, () => console.log('wallchart listening on :' + PORT));
 
 // ────────────────────────────────────────────────────────────────────────────
 // upstream → normalized
