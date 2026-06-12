@@ -19,10 +19,16 @@
   ::-webkit-scrollbar-track{background:#cdbb98;}
   @keyframes wcdot{0%,100%{opacity:1;}50%{opacity:.2;}}
   @keyframes wcring{0%{box-shadow:0 0 0 0 rgba(224,69,44,.5);}100%{box-shadow:0 0 0 8px rgba(224,69,44,0);}}
+  .wc-desktop-view{display:block;}
+  .wc-mobile-view{display:none;}
+  @media (max-width:768px){
+    .wc-desktop-view{display:none !important;}
+    .wc-mobile-view{display:block !important;}
+  }
 </style>
 </helmet>
 
-<div style="min-height:100vh;background:#E7D8BC;font-family:Archivo,sans-serif;color:#1A1614;padding:0 0 70px;">
+<div class="wc-desktop-view" style="min-height:100vh;background:#E7D8BC;font-family:Archivo,sans-serif;color:#1A1614;padding:0 0 70px;">
 
   <!-- ============ HEADER ============ -->
   <header data-screen-label="Header" style="position:relative;overflow:hidden;background:#F4E9D4;border-bottom:5px solid #1A1614;">
@@ -193,17 +199,171 @@
 
   </div>
 </div>
+
+<!-- ============================================================ -->
+<!-- ============         MOBILE VIEW (≤768px)         =========== -->
+<!-- ============================================================ -->
+<div class="wc-mobile-view" style="min-height:100vh;background:#E7D8BC;font-family:Archivo,sans-serif;color:#1A1614;padding-bottom:70px;">
+
+  <!-- compact header -->
+  <header style="position:relative;overflow:hidden;background:#F4E9D4;border-bottom:4px solid #1A1614;padding:16px 14px 12px;">
+    <div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:560px;height:560px;background:repeating-conic-gradient(from 0deg,#F2A100 0deg 7deg,transparent 7deg 14deg);opacity:.11;pointer-events:none;-webkit-mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 60%);mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 60%);"></div>
+    <div style="position:relative;">
+      <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.3em;color:#E0452C;font-weight:700;text-transform:uppercase;">El Mundial · United 2026</div>
+      <h1 style="font-family:Anton,sans-serif;font-size:42px;line-height:.88;letter-spacing:.01em;margin:4px 0 0;text-transform:uppercase;white-space:nowrap;">World Cup <span style="color:#E0452C;">2026</span></h1>
+      <div style="font-family:'Space Mono',monospace;font-size:9.5px;color:#6c5b3e;margin-top:6px;letter-spacing:.04em;">48 NATIONS · 12 GROUPS · 104 MATCHES</div>
+      <div style="display:flex;gap:7px;margin-top:11px;flex-wrap:wrap;">
+        <div style="background:#1A1614;color:#F4E9D4;padding:6px 10px;display:flex;align-items:center;gap:7px;">
+          <span style="width:8px;height:8px;border-radius:50%;background:#E0452C;animation:wcdot 1.1s infinite;"></span>
+          <span style="font-family:'Space Mono';font-size:9.5px;font-weight:700;letter-spacing:.1em;">LIVE</span>
+          <span style="font-family:Anton;font-size:14px;line-height:1;">{{ liveCount }}</span>
+        </div>
+        <div style="background:#fff;border:2px solid #1A1614;padding:4px 10px;white-space:nowrap;">
+          <div style="font-family:'Space Mono';font-size:7.5px;font-weight:700;letter-spacing:.16em;color:#6c5b3e;white-space:nowrap;">NEXT KICK-OFF</div>
+          <div style="font-family:Anton;font-size:14px;line-height:1.05;letter-spacing:.02em;white-space:nowrap;">{{ countdown }}</div>
+        </div>
+        <div style="background:#1E7A6F;color:#fff;padding:6px 10px;display:flex;align-items:center;gap:6px;font-family:'Space Mono';font-size:9.5px;font-weight:700;white-space:nowrap;">{{ favFlag }}<span>{{ favName }}</span></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:11px;flex-wrap:wrap;">
+        <div style="display:flex;border:2px solid #1A1614;background:#fff;font-family:'Space Mono';font-size:10px;font-weight:700;">
+          <div onClick="{{ setUK }}" style="{{ ukStyleMobile }}">UK · BST</div>
+          <div onClick="{{ setLocal }}" style="{{ localStyleMobile }}">LOCAL</div>
+        </div>
+        <div style="font-family:'Space Mono';font-size:9px;color:#6c5b3e;letter-spacing:.04em;display:flex;align-items:center;gap:5px;"><span style="width:6px;height:6px;border-radius:50%;background:{{ srcColor }};"></span>{{ updatedLabel }}</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- sticky tab bar -->
+  <div style="background:#1A1614;display:flex;position:sticky;top:0;z-index:10;">
+    <div onClick="{{ setMobTabGroups }}" style="{{ mobTabGroupsStyle }}">GROUPS</div>
+    <div onClick="{{ setMobTabBracket }}" style="{{ mobTabBracketStyle }}">BRACKET</div>
+  </div>
+
+  <!-- ===== GROUPS TAB ===== -->
+  <sc-if value="{{ mobTab === 'groups' }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:12px 14px 4px;">
+      <!-- A-L letter strip -->
+      <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:10px;margin-bottom:6px;-webkit-overflow-scrolling:touch;">
+        <sc-for list="{{ mobileGroupStrip }}" as="g" hint-placeholder-count="12">
+          <div onClick="{{ g.goTo }}" style="{{ g.stripStyle }}">{{ g.id }}</div>
+        </sc-for>
+      </div>
+      <!-- group cards (full width, stacked) -->
+      <sc-for list="{{ groups }}" as="g" hint-placeholder-count="12">
+        <div id="mob-grp-{{ g.id }}" style="{{ g.cardStyle }};margin-bottom:14px;scroll-margin-top:60px;">
+          <!-- group header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#1A1614;color:#F4E9D4;padding:9px 13px;">
+            <span style="font-family:Anton;font-size:22px;letter-spacing:.04em;white-space:nowrap;">GROUP {{ g.id }}</span>
+            <sc-if value="{{ g.isFav }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Space Mono';font-size:10.5px;font-weight:700;color:#F2A100;letter-spacing:.1em;">★ YOUR GROUP</span></sc-if>
+          </div>
+          <!-- standings -->
+          <div style="padding:10px 12px 4px;">
+            <div style="display:grid;grid-template-columns:1fr 22px 22px 22px 30px 30px;gap:0;font-family:'Space Mono';font-size:9.5px;font-weight:700;color:#a08a64;text-transform:uppercase;padding-bottom:6px;border-bottom:2px solid #1A1614;">
+              <span>Team</span><span style="text-align:center;">P</span><span style="text-align:center;">W</span><span style="text-align:center;">D</span><span style="text-align:center;">GD</span><span style="text-align:center;">Pts</span>
+            </div>
+            <sc-for list="{{ g.standings }}" as="s" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:1fr 22px 22px 22px 30px 30px;gap:0;align-items:center;padding:6px 0;border-bottom:1px solid #ecdfc6;">
+                <span style="display:flex;align-items:center;gap:8px;min-width:0;">
+                  <span style="width:4px;height:20px;background:{{ s.markColor }};flex:0 0 auto;"></span>
+                  {{ s.flagEl }}
+                  <span style="font-family:Archivo;font-weight:800;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</span>
+                  <sc-if value="{{ s.isFav }}" hint-placeholder-val="{{ false }}"><span style="color:#E0452C;font-size:12px;flex:0 0 auto;">★</span></sc-if>
+                </span>
+                <span style="text-align:center;font-family:'Space Mono';font-size:12px;">{{ s.P }}</span>
+                <span style="text-align:center;font-family:'Space Mono';font-size:12px;">{{ s.W }}</span>
+                <span style="text-align:center;font-family:'Space Mono';font-size:12px;">{{ s.D }}</span>
+                <span style="text-align:center;font-family:'Space Mono';font-size:12px;">{{ s.GDs }}</span>
+                <span style="text-align:center;font-family:Anton;font-size:16px;">{{ s.Pts }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <!-- fixtures -->
+          <div style="padding:8px 12px 12px;border-top:1px dashed #c9b48c;margin-top:3px;">
+            <sc-for list="{{ g.fixtures }}" as="m" hint-placeholder-count="6">
+              <div style="display:flex;align-items:center;gap:8px;padding:6px 0;font-family:Archivo;">
+                <span style="font-family:'Space Mono';font-size:9px;font-weight:700;color:#a08a64;width:28px;flex:0 0 auto;">{{ m.md }}</span>
+                <span style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:6px;font-weight:800;font-size:12.5px;">{{ m.homeCode }}{{ m.homeFlagEl }}</span>
+                <span style="{{ m.scoreStyle }}">{{ m.score }}</span>
+                <span style="flex:1;display:flex;align-items:center;gap:6px;font-weight:800;font-size:12.5px;">{{ m.awayFlagEl }}{{ m.awayCode }}</span>
+                <span style="width:42px;flex:0 0 auto;text-align:right;font-family:'Space Mono';font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;color:{{ m.statusColor }};">
+                  <sc-if value="{{ m.isLive }}" hint-placeholder-val="{{ false }}"><span style="width:7px;height:7px;border-radius:50%;background:#E0452C;animation:wcdot 1.1s infinite;flex:0 0 auto;"></span></sc-if>
+                  {{ m.statusLabel }}
+                </span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <!-- ===== BRACKET TAB ===== -->
+  <sc-if value="{{ mobTab === 'bracket' }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:14px 14px 4px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <h2 style="font-family:Anton;font-size:22px;text-transform:uppercase;margin:0;letter-spacing:.02em;">Knockout Stage</h2>
+        <div style="flex:1;height:3px;background:#1A1614;"></div>
+      </div>
+
+      <!-- round chip selector -->
+      <div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;margin-bottom:12px;-webkit-overflow-scrolling:touch;">
+        <sc-for list="{{ mobileRoundChips }}" as="r" hint-placeholder-count="5">
+          <div onClick="{{ r.set }}" style="{{ r.style }}">{{ r.label }}</div>
+        </sc-for>
+      </div>
+
+      <div style="font-family:'Space Mono';font-size:10px;font-weight:700;color:#6c5b3e;letter-spacing:.14em;text-transform:uppercase;margin-bottom:10px;">{{ mobileRoundCaption }}</div>
+
+      <!-- match cards -->
+      <sc-for list="{{ mobileRoundMatches }}" as="n" hint-placeholder-count="4">
+        <div style="{{ n.nodeStyleMobile }}">
+          <sc-if value="{{ n.isLive }}" hint-placeholder-val="{{ false }}">
+            <div style="position:absolute;top:-9px;right:12px;background:#E0452C;color:#fff;font-family:'Space Mono';font-size:9px;font-weight:700;padding:2px 7px;display:flex;align-items:center;gap:4px;"><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:wcdot 1.1s infinite;"></span>{{ n.minute }}'</div>
+          </sc-if>
+          <sc-for list="{{ n.rows }}" as="r" hint-placeholder-count="2">
+            <div style="{{ r.rowStyleMobile }}">
+              <sc-if value="{{ r.resolved }}" hint-placeholder-val="{{ true }}">
+                {{ r.flagEl }}
+                <span style="{{ r.nameStyleMobile }}">{{ r.code }}</span>
+              </sc-if>
+              <sc-if value="{{ r.unresolved }}" hint-placeholder-val="{{ false }}">
+                <span style="font-family:'Space Mono';font-size:10.5px;font-weight:700;color:#a08a64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.label }}</span>
+              </sc-if>
+              <span style="{{ r.scoreStyleMobile }}">{{ r.score }}</span>
+            </div>
+          </sc-for>
+          <div style="font-family:'Space Mono';font-size:9px;font-weight:700;color:#b0a079;text-align:center;padding:5px 0 0;letter-spacing:.06em;border-top:1px dashed #d8c7a3;">{{ n.id }} · {{ n.when }}</div>
+        </div>
+      </sc-for>
+
+      <!-- 3rd place -->
+      <sc-if value="{{ mobShowThird }}" hint-placeholder-val="{{ true }}">
+        <div style="border:2px dashed #1A1614;background:#F4E9D4;padding:11px 14px;margin-top:14px;text-align:center;">
+          <div style="font-family:'Space Mono';font-size:10px;font-weight:700;letter-spacing:.14em;color:#6c5b3e;text-transform:uppercase;">3rd-Place Play-off</div>
+          <div style="margin-top:6px;font-family:'Space Mono';font-size:11.5px;font-weight:700;color:#6c5b3e;">{{ third.aLabel }} <span style="font-family:Anton;font-size:14px;color:#1A1614;">v</span> {{ third.bLabel }}</div>
+          <div style="margin-top:4px;font-family:'Space Mono';font-size:9.5px;color:#a08a64;">{{ third.when }}</div>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+  <!-- mobile footer -->
+  <div style="padding:18px 14px 4px;font-family:'Space Mono';font-size:9.5px;color:#6c5b3e;line-height:1.6;text-align:center;">
+    Feed: <strong>{{ sourceLabel }}</strong> · times in {{ tzLabel }}
+  </div>
+</div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1660,&quot;height&quot;:1000}}">
 class Component extends DCLogic {
-  state = { t: null, tzMode: 'UK', tick: 0, src: 'seed' };
+  state = { t: null, tzMode: 'UK', tick: 0, src: 'seed', mobTab: 'groups', mobRound: 'R32' };
 
   async componentDidMount(){
     try {
       const mod = await import('./wc2026-data.js');
       this._cfg = mod.CONFIG || {};
       this._fav = (this._cfg.favorite) || 'ENG';
-      this.setState({ t: mod.buildTournament(), src: 'seed' });
+      this.setState({ t: mod.buildTournament(), src: 'seed' }, ()=>this.scrollToFavOnce());
       if (this._cfg.feedUrl) {
         this.loadFeed(mod);
         this._poll = setInterval(()=>this.loadFeed(mod), this._cfg.pollMs || 60000);
@@ -212,6 +372,23 @@ class Component extends DCLogic {
     this._tick = setInterval(()=>this.setState(s=>({ tick: s.tick + 1 })), 1000);
   }
   componentWillUnmount(){ if(this._poll) clearInterval(this._poll); if(this._tick) clearInterval(this._tick); }
+
+  scrollToFavOnce(){
+    if(this._scrolled) return;
+    this._scrolled = true;
+    if(typeof window==='undefined' || window.innerWidth>768) return;
+    if(this.state.mobTab !== 'groups') return;
+    try {
+      const t = this.state.t, fav = this._fav;
+      if(!t) return;
+      const g = t.groups.find(g=>g.teams.some(tm=>tm.code===fav));
+      if(!g) return;
+      setTimeout(()=>{
+        const el = document.getElementById('mob-grp-'+g.id);
+        if(el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+      }, 250);
+    } catch(e){}
+  }
 
   async loadFeed(mod){
     try {
@@ -274,18 +451,33 @@ class Component extends DCLogic {
     const tzBtnOn = 'padding:6px 11px;background:#1A1614;color:#F4E9D4;cursor:pointer;';
     const tzBtnOff = 'padding:6px 11px;background:#fff;color:#1A1614;cursor:pointer;';
 
+    const mobTab = this.state.mobTab || 'groups';
+    const mobRound = this.state.mobRound || 'R32';
+    const mobTabOn = 'flex:1;padding:13px 0;text-align:center;color:#F4E9D4;background:#1A1614;font-family:Anton;font-size:16px;letter-spacing:.1em;cursor:pointer;border-bottom:3px solid #E0452C;';
+    const mobTabOff = 'flex:1;padding:13px 0;text-align:center;color:#a08a64;background:#1A1614;font-family:Anton;font-size:16px;letter-spacing:.1em;cursor:pointer;border-bottom:3px solid transparent;';
+    const mobTzOn = 'padding:7px 11px;background:#1A1614;color:#F4E9D4;cursor:pointer;';
+    const mobTzOff = 'padding:7px 11px;background:#fff;color:#1A1614;cursor:pointer;';
+
     const base = {
       ukStyle: mode==='UK'?tzBtnOn:tzBtnOff,
       localStyle: mode==='LOCAL'?tzBtnOn:tzBtnOff,
+      ukStyleMobile: mode==='UK'?mobTzOn:mobTzOff,
+      localStyleMobile: mode==='LOCAL'?mobTzOn:mobTzOff,
       setUK: ()=>this.setState({tzMode:'UK'}),
       setLocal: ()=>this.setState({tzMode:'LOCAL'}),
       tzLabel: mode==='UK'?'UK time (BST)':'local host-city time',
+      mobTab,
+      mobTabGroupsStyle: mobTab==='groups'?mobTabOn:mobTabOff,
+      mobTabBracketStyle: mobTab==='bracket'?mobTabOn:mobTabOff,
+      setMobTabGroups: ()=>this.setState({mobTab:'groups'}),
+      setMobTabBracket: ()=>this.setState({mobTab:'bracket'}),
     };
 
     if(!t){
       return { ...base, groups:[], columns:[], third:{ready:false,aLabel:'',bLabel:'',when:''},
         liveCount:0, countdown:'—', updatedLabel:'loading…', srcColor:'#a08a64',
-        favFlag:null, favName:'ENGLAND', sourceLabel:'connecting…' };
+        favFlag:null, favName:'ENGLAND', sourceLabel:'connecting…',
+        mobileGroupStrip:[], mobileRoundChips:[], mobileRoundMatches:[], mobileRoundCaption:'', mobShowThird:false };
     }
 
     // ----- favorite -----
@@ -357,6 +549,10 @@ class Component extends DCLogic {
           nameStyle:'font-family:Archivo;font-weight:'+(win?'900':'800')+';font-size:12px;letter-spacing:.02em;'+(isF?'color:#E0452C;':'')+'white-space:nowrap;',
           scoreStyle:'margin-left:auto;font-family:Anton;font-size:14px;min-width:18px;text-align:right;'+(win?'color:#1A1614;':'color:#a08a64;'),
           rowStyle:'display:flex;align-items:center;gap:6px;padding:3px 8px;'+(isHome?'border-bottom:1px solid #e7d8bc;':'')+(isF?'background:rgba(224,69,44,.08);':''),
+          // larger touch targets on mobile
+          nameStyleMobile:'font-family:Archivo;font-weight:'+(win?'900':'800')+';font-size:14px;letter-spacing:.02em;'+(isF?'color:#E0452C;':'')+'white-space:nowrap;',
+          scoreStyleMobile:'margin-left:auto;font-family:Anton;font-size:18px;min-width:22px;text-align:right;'+(win?'color:#1A1614;':'color:#a08a64;'),
+          rowStyleMobile:'display:flex;align-items:center;gap:9px;padding:9px 12px;'+(isHome?'border-bottom:1px solid #e7d8bc;':'')+(isF?'background:rgba(224,69,44,.08);':''),
         };
       };
       const favPath = onFavGrp || (m._home&&m._home.code===fav) || (m._away&&m._away.code===fav);
@@ -365,6 +561,7 @@ class Component extends DCLogic {
         rows:[ rowFor(m._home,m.a,true), rowFor(m._away,m.b,false) ],
         when:this.shortDate(m.utc,m.tz), favPath,
         nodeStyle:'position:relative;background:#fff;border:2px solid #1A1614;'+(favPath?'box-shadow:3px 3px 0 #E0452C;border-color:#E0452C;':''),
+        nodeStyleMobile:'position:relative;background:#fff;border:2px solid #1A1614;margin-bottom:11px;'+(favPath?'box-shadow:4px 4px 0 #E0452C;border-color:#E0452C;':''),
       };
     };
 
@@ -405,11 +602,46 @@ class Component extends DCLogic {
     const ago=Math.floor((Date.now()-upMs)/1000);
     const updatedLabel='UPDATED '+(this.state.src==='live'?'LIVE':'SEED')+' · '+(ago<60?'just now':Math.floor(ago/60)+'m ago');
 
+    // ----- mobile: A-L letter strip -----
+    const groupLive = {}; // group id → bool
+    t.groups.forEach(g=>{ groupLive[g.id] = g.matches.some(m=>m.status==='LIVE'); });
+    const mobileGroupStrip = t.groups.map(g=>{
+      const isFav = g.id===favGroup;
+      const hasLive = !!groupLive[g.id];
+      const bg = isFav ? '#E0452C' : (hasLive ? '#1A1614' : '#F4E9D4');
+      const fg = (isFav||hasLive) ? '#fff' : '#1A1614';
+      return {
+        id: g.id, isFav, hasLive,
+        goTo: ()=>{ try { document.getElementById('mob-grp-'+g.id)?.scrollIntoView({behavior:'smooth',block:'start'}); } catch(e){} },
+        stripStyle:'flex:0 0 auto;width:38px;height:38px;border:2px solid #1A1614;background:'+bg+';color:'+fg+';display:flex;align-items:center;justify-content:center;font-family:Anton;font-size:18px;cursor:pointer;user-select:none;',
+      };
+    });
+
+    // ----- mobile: round chips + matches for selected round -----
+    const roundDefs = [
+      ['R32', 'R32', t.bracket.r32],
+      ['R16', 'R16', t.bracket.r16],
+      ['QF',  'QF',  t.bracket.qf],
+      ['SF',  'SF',  t.bracket.sf],
+      ['F',   'FINAL', [t.bracket.final]],
+    ];
+    const mobileRoundChips = roundDefs.map(([key,label])=>({
+      key, label,
+      set: ()=>this.setState({mobRound:key}),
+      style:'flex:0 0 auto;padding:9px 16px;border:2px solid #1A1614;background:'+(mobRound===key?'#1A1614':'#fff')+';color:'+(mobRound===key?'#F4E9D4':'#1A1614')+';font-family:Anton;font-size:17px;letter-spacing:.06em;cursor:pointer;user-select:none;',
+    }));
+    const activeRound = roundDefs.find(r=>r[0]===mobRound) || roundDefs[0];
+    const mobileRoundMatches = activeRound[2].map(nodeView);
+    const roundLabelMap = { R32:'Round of 32 — 16 ties', R16:'Round of 16 — 8 ties', QF:'Quarter-finals — 4 ties', SF:'Semi-finals — 2 ties', F:'The Final' };
+    const mobileRoundCaption = roundLabelMap[mobRound] || '';
+    const mobShowThird = mobRound==='SF' || mobRound==='F';
+
     return {
       ...base, groups, columns, third,
       liveCount, countdown, updatedLabel,
       srcColor:this.state.src==='live'?'#1E7A6F':'#F2A100',
       favFlag, favName, sourceLabel:this.state.src==='live'?'LIVE (proxy)':'seed (offline) — wire feedUrl for live',
+      mobileGroupStrip, mobileRoundChips, mobileRoundMatches, mobileRoundCaption, mobShowThird,
     };
   }
 }
