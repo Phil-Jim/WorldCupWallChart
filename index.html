@@ -241,7 +241,7 @@
   </div>
 
   <!-- ===== GROUPS TAB ===== -->
-  <sc-if value="{{ mobTab === 'groups' }}" hint-placeholder-val="{{ true }}">
+  <sc-if value="{{ mobTabIsGroups }}" hint-placeholder-val="{{ true }}">
     <div style="padding:12px 14px 4px;">
       <!-- A-L letter strip -->
       <div style="display:flex;gap:5px;overflow-x:auto;padding-bottom:10px;margin-bottom:6px;-webkit-overflow-scrolling:touch;">
@@ -299,7 +299,7 @@
   </sc-if>
 
   <!-- ===== BRACKET TAB ===== -->
-  <sc-if value="{{ mobTab === 'bracket' }}" hint-placeholder-val="{{ false }}">
+  <sc-if value="{{ mobTabIsBracket }}" hint-placeholder-val="{{ false }}">
     <div style="padding:14px 14px 4px;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
         <h2 style="font-family:Anton;font-size:22px;text-transform:uppercase;margin:0;letter-spacing:.02em;">Knockout Stage</h2>
@@ -467,6 +467,8 @@ class Component extends DCLogic {
       setLocal: ()=>this.setState({tzMode:'LOCAL'}),
       tzLabel: mode==='UK'?'UK time (BST)':'local host-city time',
       mobTab,
+      mobTabIsGroups: mobTab==='groups',
+      mobTabIsBracket: mobTab==='bracket',
       mobTabGroupsStyle: mobTab==='groups'?mobTabOn:mobTabOff,
       mobTabBracketStyle: mobTab==='bracket'?mobTabOn:mobTabOff,
       setMobTabGroups: ()=>this.setState({mobTab:'groups'}),
