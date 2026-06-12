@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  html,body{margin:0;background:#E7D8BC;}
+  ::-webkit-scrollbar{height:12px;width:12px;}
+  ::-webkit-scrollbar-thumb{background:#1A1614;}
+  ::-webkit-scrollbar-track{background:#cdbb98;}
+  @keyframes wcdot{0%,100%{opacity:1;}50%{opacity:.2;}}
+  @keyframes wcring{0%{box-shadow:0 0 0 0 rgba(224,69,44,.5);}100%{box-shadow:0 0 0 8px rgba(224,69,44,0);}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#E7D8BC;font-family:Archivo,sans-serif;color:#1A1614;padding:0 0 70px;">
+
+  <!-- ============ HEADER ============ -->
+  <header data-screen-label="Header" style="position:relative;overflow:hidden;background:#F4E9D4;border-bottom:5px solid #1A1614;">
+    <div style="position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:1100px;height:1100px;background:repeating-conic-gradient(from 0deg,#F2A100 0deg 7deg,transparent 7deg 14deg);opacity:.13;pointer-events:none;-webkit-mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 60%);mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 60%);"></div>
+    <div style="position:relative;max-width:1660px;margin:0 auto;padding:26px 36px 22px;">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.34em;color:#E0452C;font-weight:700;text-transform:uppercase;">El Mundial · United 2026 · 🇺🇸 🇨🇦 🇲🇽</div>
+          <h1 style="font-family:Anton,sans-serif;font-size:74px;line-height:.84;letter-spacing:.01em;margin:6px 0 0;text-transform:uppercase;white-space:nowrap;">World Cup <span style="color:#E0452C;">2026</span></h1>
+          <div style="font-family:'Space Mono',monospace;font-size:12px;color:#6c5b3e;margin-top:8px;letter-spacing:.06em;">48 NATIONS · 12 GROUPS · 104 MATCHES · GROUP STAGE → FINAL</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px;">
+          <!-- ticker chips -->
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+            <div style="background:#1A1614;color:#F4E9D4;padding:8px 13px;display:flex;align-items:center;gap:9px;">
+              <span style="width:9px;height:9px;border-radius:50%;background:#E0452C;animation:wcdot 1.1s infinite;"></span>
+              <span style="font-family:'Space Mono';font-size:11px;font-weight:700;letter-spacing:.1em;">LIVE NOW</span>
+              <span style="font-family:Anton;font-size:18px;line-height:1;">{{ liveCount }}</span>
+            </div>
+            <div style="background:#fff;border:2px solid #1A1614;padding:6px 13px;white-space:nowrap;">
+              <div style="font-family:'Space Mono';font-size:9px;font-weight:700;letter-spacing:.16em;color:#6c5b3e;white-space:nowrap;">NEXT KICK-OFF</div>
+              <div style="font-family:Anton;font-size:19px;line-height:1.05;letter-spacing:.02em;white-space:nowrap;">{{ countdown }}</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+            <div style="display:flex;border:2px solid #1A1614;background:#fff;font-family:'Space Mono';font-size:11px;font-weight:700;">
+              <div onClick="{{ setUK }}" style="{{ ukStyle }}" style-hover="opacity:.85;">UK · BST</div>
+              <div onClick="{{ setLocal }}" style="{{ localStyle }}" style-hover="opacity:.85;">LOCAL</div>
+            </div>
+            <div style="background:#1E7A6F;color:#fff;padding:7px 12px;display:flex;align-items:center;gap:7px;font-family:'Space Mono';font-size:11px;font-weight:700;white-space:nowrap;">{{ favFlag }}<span>FOLLOWING {{ favName }}</span></div>
+            <div style="font-family:'Space Mono';font-size:10px;color:#6c5b3e;letter-spacing:.04em;display:flex;align-items:center;gap:6px;"><span style="width:7px;height:7px;border-radius:50%;background:{{ srcColor }};"></span>{{ updatedLabel }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div style="max-width:1660px;margin:0 auto;padding:0 36px;">
+
+    <!-- ============ GROUP STAGE ============ -->
+    <section data-screen-label="Group Stage" style="padding:30px 0 8px;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px;">
+        <h2 style="font-family:Anton;font-size:30px;text-transform:uppercase;margin:0;letter-spacing:.02em;">Group Stage</h2>
+        <div style="flex:1;height:4px;background:#1A1614;"></div>
+        <div style="display:flex;gap:14px;font-family:'Space Mono';font-size:10.5px;font-weight:700;color:#6c5b3e;text-transform:uppercase;">
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:#1E7A6F;"></span>Qualify</span>
+          <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:10px;height:10px;background:#F2A100;"></span>Best 3rd</span>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+        <sc-for list="{{ groups }}" as="g" hint-placeholder-count="12">
+          <div style="{{ g.cardStyle }}">
+            <!-- group header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;background:#1A1614;color:#F4E9D4;padding:7px 12px;">
+              <span style="font-family:Anton;font-size:19px;letter-spacing:.04em;white-space:nowrap;">GROUP {{ g.id }}</span>
+              <sc-if value="{{ g.isFav }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Space Mono';font-size:9.5px;font-weight:700;color:#F2A100;letter-spacing:.1em;">★ YOUR GROUP</span></sc-if>
+            </div>
+            <!-- standings -->
+            <div style="padding:9px 11px 4px;">
+              <div style="display:grid;grid-template-columns:1fr 17px 17px 17px 26px 26px;gap:0;font-family:'Space Mono';font-size:9px;font-weight:700;color:#a08a64;text-transform:uppercase;padding-bottom:5px;border-bottom:2px solid #1A1614;">
+                <span>Team</span><span style="text-align:center;">P</span><span style="text-align:center;">W</span><span style="text-align:center;">D</span><span style="text-align:center;">GD</span><span style="text-align:center;">Pts</span>
+              </div>
+              <sc-for list="{{ g.standings }}" as="s" hint-placeholder-count="4">
+                <div style="{{ s.rowStyle }}">
+                  <span style="display:flex;align-items:center;gap:7px;min-width:0;">
+                    <span style="width:4px;height:18px;background:{{ s.markColor }};flex:0 0 auto;"></span>
+                    {{ s.flagEl }}
+                    <span style="font-family:Archivo;font-weight:800;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.name }}</span>
+                    <sc-if value="{{ s.isFav }}" hint-placeholder-val="{{ false }}"><span style="color:#E0452C;font-size:11px;flex:0 0 auto;">★</span></sc-if>
+                  </span>
+                  <span style="text-align:center;font-family:'Space Mono';font-size:11px;">{{ s.P }}</span>
+                  <span style="text-align:center;font-family:'Space Mono';font-size:11px;">{{ s.W }}</span>
+                  <span style="text-align:center;font-family:'Space Mono';font-size:11px;">{{ s.D }}</span>
+                  <span style="text-align:center;font-family:'Space Mono';font-size:11px;">{{ s.GDs }}</span>
+                  <span style="text-align:center;font-family:Anton;font-size:15px;">{{ s.Pts }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <!-- fixtures -->
+            <div style="padding:6px 11px 11px;border-top:1px dashed #c9b48c;margin-top:2px;">
+              <sc-for list="{{ g.fixtures }}" as="m" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:7px;padding:4px 0;font-family:Archivo;">
+                  <span style="font-family:'Space Mono';font-size:8.5px;font-weight:700;color:#a08a64;width:26px;flex:0 0 auto;">{{ m.md }}</span>
+                  <span style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:5px;font-weight:800;font-size:11.5px;">{{ m.homeCode }}{{ m.homeFlagEl }}</span>
+                  <span style="{{ m.scoreStyle }}">{{ m.score }}</span>
+                  <span style="flex:1;display:flex;align-items:center;gap:5px;font-weight:800;font-size:11.5px;">{{ m.awayFlagEl }}{{ m.awayCode }}</span>
+                  <span style="width:34px;flex:0 0 auto;text-align:right;font-family:'Space Mono';font-size:8.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:flex-end;gap:4px;color:{{ m.statusColor }};">
+                    <sc-if value="{{ m.isLive }}" hint-placeholder-val="{{ false }}"><span style="width:6px;height:6px;border-radius:50%;background:#E0452C;animation:wcdot 1.1s infinite;flex:0 0 auto;"></span></sc-if>
+                    {{ m.statusLabel }}
+                  </span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </section>
+
+    <!-- ============ KNOCKOUT ============ -->
+    <section data-screen-label="Knockout" style="padding:34px 0 0;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+        <h2 style="font-family:Anton;font-size:30px;text-transform:uppercase;margin:0;letter-spacing:.02em;">Knockout Stage</h2>
+        <div style="flex:1;height:4px;background:#1A1614;"></div>
+        <span style="font-family:'Space Mono';font-size:10.5px;font-weight:700;color:#6c5b3e;text-transform:uppercase;">Auto-fills as groups finish</span>
+      </div>
+
+      <div style="overflow-x:auto;padding-bottom:14px;">
+        <div style="display:flex;min-width:1056px;height:1230px;align-items:stretch;">
+          <sc-for list="{{ columns }}" as="col" hint-placeholder-count="5">
+            <div style="{{ col.colStyle }}">
+              <div style="text-align:center;font-family:'Space Mono';font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#6c5b3e;padding-bottom:8px;height:26px;">{{ col.label }}</div>
+              <div style="flex:1;display:flex;flex-direction:column;">
+                <sc-for list="{{ col.matches }}" as="n" hint-placeholder-count="4">
+                  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;padding:0 13px;">
+                    <sc-if value="{{ col.hasIn }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;left:0;top:25%;height:50%;border-left:2px solid #1A1614;"></div>
+                      <div style="position:absolute;left:0;top:50%;width:13px;border-top:2px solid #1A1614;"></div>
+                    </sc-if>
+                    <sc-if value="{{ col.hasOut }}" hint-placeholder-val="{{ false }}">
+                      <div style="position:absolute;right:0;top:50%;width:13px;border-top:2px solid #1A1614;"></div>
+                    </sc-if>
+                    <div style="{{ n.nodeStyle }}">
+                      <sc-if value="{{ n.isLive }}" hint-placeholder-val="{{ false }}">
+                        <div style="position:absolute;top:-9px;right:8px;background:#E0452C;color:#fff;font-family:'Space Mono';font-size:8px;font-weight:700;padding:1px 5px;display:flex;align-items:center;gap:4px;"><span style="width:5px;height:5px;border-radius:50%;background:#fff;animation:wcdot 1.1s infinite;"></span>{{ n.minute }}'</div>
+                      </sc-if>
+                      <sc-for list="{{ n.rows }}" as="r" hint-placeholder-count="2">
+                        <div style="{{ r.rowStyle }}">
+                          <sc-if value="{{ r.resolved }}" hint-placeholder-val="{{ true }}">
+                            {{ r.flagEl }}
+                            <span style="{{ r.nameStyle }}">{{ r.code }}</span>
+                          </sc-if>
+                          <sc-if value="{{ r.unresolved }}" hint-placeholder-val="{{ false }}">
+                            <span style="font-family:'Space Mono';font-size:9px;font-weight:700;color:#a08a64;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.label }}</span>
+                          </sc-if>
+                          <span style="{{ r.scoreStyle }}">{{ r.score }}</span>
+                        </div>
+                      </sc-for>
+                      <div style="font-family:'Space Mono';font-size:7.5px;font-weight:700;color:#b0a079;text-align:center;padding:2px 0 0;letter-spacing:.04em;border-top:1px dashed #d8c7a3;">{{ n.when }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- third place -->
+      <div style="display:flex;justify-content:center;margin-top:6px;">
+        <div style="border:2px dashed #1A1614;background:#F4E9D4;padding:10px 18px;display:flex;align-items:center;gap:16px;">
+          <span style="font-family:'Space Mono';font-size:10px;font-weight:700;letter-spacing:.14em;color:#6c5b3e;text-transform:uppercase;">3rd-Place Play-off</span>
+          <sc-if value="{{ third.ready }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:10px;font-family:'Space Mono';font-size:11px;font-weight:700;color:#6c5b3e;">
+              <span>{{ third.aLabel }}</span><span style="font-family:Anton;font-size:14px;color:#1A1614;">v</span><span>{{ third.bLabel }}</span>
+            </div>
+          </sc-if>
+          <span style="font-family:'Space Mono';font-size:10px;color:#a08a64;">{{ third.when }}</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- footer note -->
+    <div style="margin-top:30px;padding-top:16px;border-top:2px solid #1A1614;font-family:'Space Mono';font-size:10.5px;color:#6c5b3e;line-height:1.6;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;">
+      <span>Data feed: <strong>{{ sourceLabel }}</strong> · polling every 60s when live · all results overlay automatically.</span>
+      <span>Times shown in {{ tzLabel }}. Toggle UK / Local above.</span>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1660,&quot;height&quot;:1000}}">
+class Component extends DCLogic {
+  state = { t: null, tzMode: 'UK', tick: 0, src: 'seed' };
+
+  async componentDidMount(){
+    try {
+      const mod = await import('./wc2026-data.js');
+      this._cfg = mod.CONFIG || {};
+      this._fav = (this._cfg.favorite) || 'ENG';
+      this.setState({ t: mod.buildTournament(), src: 'seed' });
+      if (this._cfg.feedUrl) {
+        this.loadFeed(mod);
+        this._poll = setInterval(()=>this.loadFeed(mod), this._cfg.pollMs || 60000);
+      }
+    } catch(e){ console.warn('data load failed', e); }
+    this._tick = setInterval(()=>this.setState(s=>({ tick: s.tick + 1 })), 1000);
+  }
+  componentWillUnmount(){ if(this._poll) clearInterval(this._poll); if(this._tick) clearInterval(this._tick); }
+
+  async loadFeed(mod){
+    try {
+      const res = await fetch(this._cfg.feedUrl, { cache: 'no-store' });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      // the proxy returns the same normalised shape as buildTournament()
+      if(data && data.groups) this.setState({ t: data, src: 'live' });
+    } catch(e){ /* keep last good data */ }
+  }
+
+  flagSrc(team){
+    if(team && typeof team==='object'){ if(team.flag) return team.flag; if(team.fc) return 'https://flagcdn.com/w40/'+team.fc+'.png'; return ''; }
+    if(typeof team==='string') return 'https://flagcdn.com/w40/'+team+'.png';
+    return '';
+  }
+  flagEl(team, w, h){
+    return React.createElement('img', { src: this.flagSrc(team), alt: '', style: {
+      width: w+'px', height: h+'px', objectFit: 'cover', border: '1px solid #1A1614', display: 'block', flex: '0 0 auto'
+    }});
+  }
+
+  computeStandings(g){
+    const t = {};
+    g.teams.forEach(tm => t[tm.code] = { ...tm, P:0,W:0,D:0,L:0,GF:0,GA:0,Pts:0 });
+    g.matches.filter(m=>m.status==='FT').forEach(m=>{
+      if(m.hs==null || m.as==null) return;
+      const h=t[m.home.code], a=t[m.away.code];
+      if(!h||!a) return;
+      h.P++; a.P++; h.GF+=m.hs; h.GA+=m.as; a.GF+=m.as; a.GA+=m.hs;
+      if(m.hs>m.as){ h.W++; a.L++; h.Pts+=3; }
+      else if(m.hs<m.as){ a.W++; h.L++; a.Pts+=3; }
+      else { h.D++; a.D++; h.Pts++; a.Pts++; }
+    });
+    return Object.values(t).sort((x,y)=> y.Pts-x.Pts || (y.GF-y.GA)-(x.GF-x.GA) || y.GF-x.GF || x.name.localeCompare(y.name));
+  }
+
+  fmtParts(utc, mode, tz){
+    const zone = mode==='UK' ? 'Europe/London' : (tz || 'UTC');
+    const d = new Date(utc);
+    const p = new Intl.DateTimeFormat('en-GB',{ timeZone:zone, weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12:false }).formatToParts(d);
+    const get = t => (p.find(x=>x.type===t)||{}).value || '';
+    let abbr = 'BST';
+    if(mode!=='UK'){
+      const z = new Intl.DateTimeFormat('en-US',{ timeZone:zone, timeZoneName:'short' }).formatToParts(d).find(x=>x.type==='timeZoneName');
+      abbr = z ? z.value : '';
+    }
+    return { wd:get('weekday').toUpperCase(), day:get('day'), mon:get('month').toUpperCase(), hh:get('hour'), mm:get('minute'), abbr };
+  }
+  shortDate(utc){ const f=this.fmtParts(utc,this.state.tzMode,arguments[1]); return f.day+' '+f.mon; }
+  whenFull(utc, tz){ const f=this.fmtParts(utc,this.state.tzMode,tz); return f.wd+' '+f.day+' '+f.mon+' · '+f.hh+':'+f.mm+' '+f.abbr; }
+
+  matchWinner(m){ if(m.status!=='FT'||m.hs==null) return null; if(m.hs>m.as) return m._home; if(m.as>m.hs) return m._away; return null; }
+  matchLoser(m){ if(m.status!=='FT'||m.hs==null) return null; if(m.hs>m.as) return m._away; if(m.as>m.hs) return m._home; return null; }
+
+  renderVals(){
+    const t = this.state.t;
+    const fav = this._fav || 'ENG';
+    const mode = this.state.tzMode;
+    const tzBtnOn = 'padding:6px 11px;background:#1A1614;color:#F4E9D4;cursor:pointer;';
+    const tzBtnOff = 'padding:6px 11px;background:#fff;color:#1A1614;cursor:pointer;';
+
+    const base = {
+      ukStyle: mode==='UK'?tzBtnOn:tzBtnOff,
+      localStyle: mode==='LOCAL'?tzBtnOn:tzBtnOff,
+      setUK: ()=>this.setState({tzMode:'UK'}),
+      setLocal: ()=>this.setState({tzMode:'LOCAL'}),
+      tzLabel: mode==='UK'?'UK time (BST)':'local host-city time',
+    };
+
+    if(!t){
+      return { ...base, groups:[], columns:[], third:{ready:false,aLabel:'',bLabel:'',when:''},
+        liveCount:0, countdown:'—', updatedLabel:'loading…', srcColor:'#a08a64',
+        favFlag:null, favName:'ENGLAND', sourceLabel:'connecting…' };
+    }
+
+    // ----- favorite -----
+    let favGroup='', favName='ENGLAND', favFc='gb-eng';
+    t.groups.forEach(g=> g.teams.forEach(tm=>{ if(tm.code===fav){ favGroup=g.id; favName=tm.name.toUpperCase(); favFc=tm.fc; } }));
+    const favFlag = this.flagEl({ fc: favFc }, 17, 11);
+
+    // ----- groups -----
+    const groups = t.groups.map(g=>{
+      const isFav = g.id===favGroup;
+      const standRaw = this.computeStandings(g);
+      const standings = standRaw.map((s,i)=>{
+        const gd = s.GF-s.GA;
+        const mark = i<2 ? '#1E7A6F' : i===2 ? '#F2A100' : '#d8c7a3';
+        const isF = s.code===fav;
+        return {
+          ...s, GDs:(gd>0?'+':'')+gd, markColor:mark, isFav:isF,
+          flagEl:this.flagEl(s,19,12),
+          rowStyle:'display:grid;grid-template-columns:1fr 17px 17px 17px 26px 26px;gap:0;align-items:center;padding:5px 0;border-bottom:1px solid #ecdfc6;'+(isF?'background:rgba(224,69,44,.07);':''),
+        };
+      });
+      const fixtures = g.matches.map(m=>{
+        const live = m.status==='LIVE';
+        const up = m.status==='UP';
+        return {
+          md:'MD'+m.matchday,
+          homeCode:m.home.code, awayCode:m.away.code,
+          homeFlagEl:this.flagEl(m.home,16,11), awayFlagEl:this.flagEl(m.away,16,11),
+          score: up?'v':(m.hs+'–'+m.as),
+          isLive:live, minute:m.minute,
+          statusLabel: live?(m.minute+"'"):(m.status==='FT'?'FT':this.shortDate(m.utc,m.tz)),
+          statusColor: live?'#E0452C':'#a08a64',
+          scoreStyle:'font-family:Anton;font-size:14px;min-width:40px;text-align:center;padding:1px 6px;letter-spacing:.03em;'+(up?'color:#b0a079;':'color:#F4E9D4;background:#1A1614;'),
+        };
+      });
+      return {
+        id:g.id, isFav, standings, fixtures,
+        cardStyle:'background:#F4E9D4;border:2px solid #1A1614;'+(isFav?'box-shadow:5px 5px 0 #E0452C;':'box-shadow:4px 4px 0 #1A1614;'),
+      };
+    });
+
+    // ----- knockout resolution -----
+    const standCache={}; t.groups.forEach(g=> standCache[g.id]=this.computeStandings(g));
+    const complete = id => { const g=t.groups.find(x=>x.id===id); return g && g.matches.every(m=>m.status==='FT'); };
+    const byId={};
+    const seq=[...t.bracket.r32,...t.bracket.r16,...t.bracket.qf,...t.bracket.sf,t.bracket.third,t.bracket.final];
+    seq.forEach(m=>byId[m.id]=m);
+    const resolveSlot = slot=>{
+      if(!slot) return null;
+      if(slot.kind==='g'){ if(!complete(slot.group)) return null; const s=standCache[slot.group]; return s[slot.rank-1]||null; }
+      if(slot.kind==='t'){ return null; } // best-thirds resolved by live feed
+      if(slot.kind==='W'){ const m=byId[slot.match]; return m?this.matchWinner(m):null; }
+      if(slot.kind==='L'){ const m=byId[slot.match]; return m?this.matchLoser(m):null; }
+      return null;
+    };
+    seq.forEach(m=>{ m._home = m.home || resolveSlot(m.a); m._away = m.away || resolveSlot(m.b); });
+
+    const nodeView = (m)=>{
+      const onFavGrp = (m.a&&m.a.group===favGroup)||(m.b&&m.b.group===favGroup);
+      const rowFor=(team,slot,isHome)=>{
+        const res=!!team;
+        const isF=res&&team.code===fav;
+        const win=(m.status==='FT')&&res&&(isHome? m.hs>m.as : m.as>m.hs);
+        return {
+          resolved:res, unresolved:!res,
+          flagEl:res?this.flagEl(team,18,12):null,
+          code:res?team.code:'', label:res?'':(slot?slot.label:'TBD'),
+          score:(m.status==='UP'||m.hs==null)?'':String(isHome?m.hs:m.as),
+          nameStyle:'font-family:Archivo;font-weight:'+(win?'900':'800')+';font-size:12px;letter-spacing:.02em;'+(isF?'color:#E0452C;':'')+'white-space:nowrap;',
+          scoreStyle:'margin-left:auto;font-family:Anton;font-size:14px;min-width:18px;text-align:right;'+(win?'color:#1A1614;':'color:#a08a64;'),
+          rowStyle:'display:flex;align-items:center;gap:6px;padding:3px 8px;'+(isHome?'border-bottom:1px solid #e7d8bc;':'')+(isF?'background:rgba(224,69,44,.08);':''),
+        };
+      };
+      const favPath = onFavGrp || (m._home&&m._home.code===fav) || (m._away&&m._away.code===fav);
+      return {
+        id:m.id, status:m.status, isLive:m.status==='LIVE', minute:m.minute,
+        rows:[ rowFor(m._home,m.a,true), rowFor(m._away,m.b,false) ],
+        when:this.shortDate(m.utc,m.tz), favPath,
+        nodeStyle:'position:relative;background:#fff;border:2px solid #1A1614;'+(favPath?'box-shadow:3px 3px 0 #E0452C;border-color:#E0452C;':''),
+      };
+    };
+
+    const mkCol=(label,arr,hasIn,hasOut,w)=>({
+      label, hasIn, hasOut,
+      colStyle:'flex:0 0 '+w+'px;display:flex;flex-direction:column;',
+      matches:arr.map(nodeView),
+    });
+    const columns=[
+      mkCol('Round of 32', t.bracket.r32, false, true, 208),
+      mkCol('Round of 16', t.bracket.r16, true, true, 208),
+      mkCol('Quarter-finals', t.bracket.qf, true, true, 208),
+      mkCol('Semi-finals', t.bracket.sf, true, true, 208),
+      mkCol('Final', [t.bracket.final], true, false, 224),
+    ];
+
+    // third place
+    const th=t.bracket.third;
+    const third={ ready:true,
+      aLabel: th._home?th._home.name:(th.a?th.a.label:'TBD'),
+      bLabel: th._away?th._away.name:(th.b?th.b.label:'TBD'),
+      when:this.whenFull(th.utc, th.tz) };
+
+    // ----- ticker -----
+    let liveCount=0; const upcoming=[];
+    const scan=m=>{ if(m.status==='LIVE')liveCount++; if(m.status==='UP')upcoming.push(m); };
+    t.groups.forEach(g=>g.matches.forEach(scan)); seq.forEach(scan);
+    upcoming.sort((a,b)=>new Date(a.utc)-new Date(b.utc));
+    const next=upcoming[0];
+    let countdown='—';
+    if(next){
+      let diff=Math.max(0, new Date(next.utc).getTime()-Date.now());
+      const d=Math.floor(diff/86400000),h=Math.floor(diff%86400000/3600000),mi=Math.floor(diff%3600000/60000),se=Math.floor(diff%60000/1000);
+      const pad=n=>String(n).padStart(2,'0');
+      countdown=(d>0?d+'D ':'')+pad(h)+':'+pad(mi)+':'+pad(se);
+    }
+    const upMs=t.meta&&t.meta.updated?t.meta.updated:Date.now();
+    const ago=Math.floor((Date.now()-upMs)/1000);
+    const updatedLabel='UPDATED '+(this.state.src==='live'?'LIVE':'SEED')+' · '+(ago<60?'just now':Math.floor(ago/60)+'m ago');
+
+    return {
+      ...base, groups, columns, third,
+      liveCount, countdown, updatedLabel,
+      srcColor:this.state.src==='live'?'#1E7A6F':'#F2A100',
+      favFlag, favName, sourceLabel:this.state.src==='live'?'LIVE (proxy)':'seed (offline) — wire feedUrl for live',
+    };
+  }
+}
+</script>
+</body>
+</html>

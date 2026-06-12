@@ -1,0 +1,16 @@
+{
+  "name": "wallchart-feed",
+  "version": "1.0.0",
+  "description": "Railway proxy for football-data.org → normalized World Cup 2026 tournament JSON for the wall chart",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
